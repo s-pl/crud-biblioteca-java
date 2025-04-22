@@ -9,12 +9,12 @@
             <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/model/Autor.java</file>
             <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/model/Categoria.java</file>
             <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/model/Libro.java</file>
-            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/GestionLibrosPanel.java</file>
             <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/dao/AutorDAO.java</file>
             <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/dao/LibroDAO.java</file>
-            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/GestionAutoresPanel.java</file>
-            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/BibliotecaAPP.java</file>
-            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/GestionCategoriasPanel.java</file>
+            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/BibliotecaApp.java</file>
+            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/VistaLibros.java</file>
+            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/VistaAutores.java</file>
+            <file>file:/C:/Users/Gamer/Desktop/Biblioteca/Biblioteca/src/es/daw/samuel/biblioteca/vista/VistaCategorias.java</file>
         </group>
     </open-files>
 </project-private>

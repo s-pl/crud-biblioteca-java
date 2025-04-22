@@ -1,0 +1,331 @@
+package es.daw.samuel.biblioteca.vista;
+
+import es.daw.samuel.biblioteca.dao.AutorDAO;
+import es.daw.samuel.biblioteca.dao.CategoriaDAO;
+import es.daw.samuel.biblioteca.dao.LibroDAO;
+import es.daw.samuel.biblioteca.model.Autor;
+import es.daw.samuel.biblioteca.model.Categoria;
+import es.daw.samuel.biblioteca.model.Libro;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class VistaLibros extends JPanel {
+    
+    private LibroDAO libroDAO;
+    private AutorDAO autorDAO;
+    private CategoriaDAO categoriaDAO;
+    
+    private JTable tablaLibros;
+    private DefaultTableModel modeloLibros;
+    
+    private JTextField campoISBN;
+    private JTextField campoTitulo;
+    private JTextField campoAnioPublicacion;
+    private JComboBox<String> comboAutores;
+    private JComboBox<String> comboCategorias;
+    
+    // Mapas para almacenar los IDs relacionados con cada ítem de los combos
+    private Map<String, Integer> mapaAutores;
+    private Map<String, Integer> mapaCategorias;
+    
+    public VistaLibros() {
+        libroDAO = new LibroDAO();
+        autorDAO = new AutorDAO();
+        categoriaDAO = new CategoriaDAO();
+        
+        mapaAutores = new HashMap<>();
+        mapaCategorias = new HashMap<>();
+        
+        setLayout(new BorderLayout());
+        
+        inicializarComponentes();
+        cargarDatos();
+    }
+    
+    private void inicializarComponentes() {
+        // Panel superior con la tabla
+        JPanel panelTabla = new JPanel(new BorderLayout());
+        
+        // Crear tabla de libros
+        modeloLibros = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        modeloLibros.addColumn("ISBN");
+        modeloLibros.addColumn("Título");
+        modeloLibros.addColumn("Año");
+        modeloLibros.addColumn("Autor");
+        modeloLibros.addColumn("Categoría");
+        
+        tablaLibros = new JTable(modeloLibros);
+        tablaLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablaLibros.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && tablaLibros.getSelectedRow() != -1) {
+                mostrarLibroSeleccionado();
+            }
+        });
+        
+        JScrollPane scrollPane = new JScrollPane(tablaLibros);
+        panelTabla.add(scrollPane, BorderLayout.CENTER);
+        
+        // Panel inferior con el formulario
+        JPanel panelFormulario = new JPanel(new BorderLayout());
+        panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del Libro"));
+        
+        // Campos del formulario
+        JPanel panelCampos = new JPanel(new GridLayout(5, 2, 10, 10));
+        panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        panelCampos.add(new JLabel("ISBN:"));
+        campoISBN = new JTextField();
+        panelCampos.add(campoISBN);
+        
+        panelCampos.add(new JLabel("Título:"));
+        campoTitulo = new JTextField();
+        panelCampos.add(campoTitulo);
+        
+        panelCampos.add(new JLabel("Año de Publicación:"));
+        campoAnioPublicacion = new JTextField();
+        panelCampos.add(campoAnioPublicacion);
+        
+        panelCampos.add(new JLabel("Autor:"));
+        comboAutores = new JComboBox<>();
+        panelCampos.add(comboAutores);
+        
+        panelCampos.add(new JLabel("Categoría:"));
+        comboCategorias = new JComboBox<>();
+        panelCampos.add(comboCategorias);
+        
+        panelFormulario.add(panelCampos, BorderLayout.CENTER);
+        
+        // Panel de botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+        JButton botonNuevo = new JButton("Nuevo");
+        botonNuevo.addActionListener(e -> limpiarFormulario());
+        
+        JButton botonGuardar = new JButton("Guardar");
+        botonGuardar.addActionListener(e -> guardarLibro());
+        
+        JButton botonEliminar = new JButton("Eliminar");
+        botonEliminar.addActionListener(e -> eliminarLibro());
+        
+        panelBotones.add(botonNuevo);
+        panelBotones.add(botonGuardar);
+        panelBotones.add(botonEliminar);
+        
+        panelFormulario.add(panelBotones, BorderLayout.SOUTH);
+        
+        // Añadir paneles al panel principal
+        add(panelTabla, BorderLayout.CENTER);
+        add(panelFormulario, BorderLayout.SOUTH);
+    }
+    
+    private void cargarDatos() {
+        cargarAutores();
+        cargarCategorias();
+        cargarLibros();
+    }
+    
+    private void cargarAutores() {
+        // Limpiar combo y mapa
+        comboAutores.removeAllItems();
+        mapaAutores.clear();
+        
+        // Obtener autores de la base de datos
+        ArrayList<Autor> autores = autorDAO.obtenerTodosLosAutores();
+        
+        // Cargar autores en el combo
+        for (Autor autor : autores) {
+            String item = autor.getNombre();
+            comboAutores.addItem(item);
+            mapaAutores.put(item, autor.getId());
+        }
+    }
+    
+    private void cargarCategorias() {
+        // Limpiar combo y mapa
+        comboCategorias.removeAllItems();
+        mapaCategorias.clear();
+        
+        // Obtener categorías de la base de datos
+        ArrayList<Categoria> categorias = categoriaDAO.obtenerTodasLasCategorias();
+        
+        // Cargar categorías en el combo
+        for (Categoria categoria : categorias) {
+            String item = categoria.getNombre();
+            comboCategorias.addItem(item);
+            mapaCategorias.put(item, categoria.getId());
+        }
+    }
+    
+    private void cargarLibros() {
+        // Limpiar tabla
+        modeloLibros.setRowCount(0);
+        
+        // Obtener libros de la base de datos
+        ArrayList<Libro> libros = libroDAO.obtenerTodosLosLibros();
+        
+        // Mapa inverso de IDs a nombres
+        Map<Integer, String> nombresAutores = new HashMap<>();
+        Map<Integer, String> nombresCategorias = new HashMap<>();
+        
+        for (Map.Entry<String, Integer> entry : mapaAutores.entrySet()) {
+            nombresAutores.put(entry.getValue(), entry.getKey());
+        }
+        
+        for (Map.Entry<String, Integer> entry : mapaCategorias.entrySet()) {
+            nombresCategorias.put(entry.getValue(), entry.getKey());
+        }
+        
+        // Cargar libros en la tabla
+        for (Libro libro : libros) {
+            String nombreAutor = nombresAutores.getOrDefault(libro.getAutor(), "Desconocido");
+            String nombreCategoria = nombresCategorias.getOrDefault(libro.getCategoria(), "Desconocida");
+            
+            Object[] fila = {
+                libro.getIsbn(),
+                libro.getTitulo(),
+                libro.getAnio_pub(),
+                nombreAutor,
+                nombreCategoria
+            };
+            
+            modeloLibros.addRow(fila);
+        }
+    }
+    
+    private void mostrarLibroSeleccionado() {
+        int fila = tablaLibros.getSelectedRow();
+        if (fila != -1) {
+            String isbn = (String) modeloLibros.getValueAt(fila, 0);
+            String titulo = (String) modeloLibros.getValueAt(fila, 1);
+            int anio = (int) modeloLibros.getValueAt(fila, 2);
+            String autorNombre = (String) modeloLibros.getValueAt(fila, 3);
+            String categoriaNombre = (String) modeloLibros.getValueAt(fila, 4);
+            
+            campoISBN.setText(isbn);
+            campoTitulo.setText(titulo);
+            campoAnioPublicacion.setText(String.valueOf(anio));
+            
+            // Seleccionar el autor en el combo
+            for (int i = 0; i < comboAutores.getItemCount(); i++) {
+                if (comboAutores.getItemAt(i).equals(autorNombre)) {
+                    comboAutores.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
+            // Seleccionar la categoría en el combo
+            for (int i = 0; i < comboCategorias.getItemCount(); i++) {
+                if (comboCategorias.getItemAt(i).equals(categoriaNombre)) {
+                    comboCategorias.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
+            // Deshabilitar edición del ISBN para libros existentes
+            campoISBN.setEditable(false);
+        }
+    }
+    
+    private void guardarLibro() {
+        String isbn = campoISBN.getText().trim();
+        String titulo = campoTitulo.getText().trim();
+        String anioStr = campoAnioPublicacion.getText().trim();
+        
+        if (isbn.isEmpty() || titulo.isEmpty() || anioStr.isEmpty() || 
+            comboAutores.getSelectedIndex() == -1 || comboCategorias.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int anio;
+        try {
+            anio = Integer.parseInt(anioStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El año debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Obtener IDs de autor y categoría seleccionados
+        String autorSeleccionado = comboAutores.getSelectedItem().toString();
+        String categoriaSeleccionada = comboCategorias.getSelectedItem().toString();
+        
+        int autorId = mapaAutores.get(autorSeleccionado);
+        int categoriaId = mapaCategorias.get(categoriaSeleccionada);
+        
+        // Crear libro
+        Libro libro = new Libro(isbn, titulo, anio, autorId, categoriaId);
+        
+        int filaSeleccionada = tablaLibros.getSelectedRow();
+        boolean esNuevo = filaSeleccionada == -1 || !campoISBN.isEditable();
+        
+        boolean resultado;
+        if (esNuevo) {
+            resultado = libroDAO.añadirLibro(libro);
+        } else {
+            resultado = libroDAO.actualizarLibroDB(libro);
+        }
+        
+        if (resultado) {
+            String mensaje = esNuevo ? "Libro agregado correctamente" : "Libro actualizado correctamente";
+            JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            limpiarFormulario();
+            cargarLibros();
+        } else {
+            String error = esNuevo ? "Error al agregar el libro" : "Error al actualizar el libro";
+            JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void eliminarLibro() {
+        int filaSeleccionada = tablaLibros.getSelectedRow();
+        
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un libro", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String isbn = (String) modeloLibros.getValueAt(filaSeleccionada, 0);
+        String titulo = (String) modeloLibros.getValueAt(filaSeleccionada, 1);
+        
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+                "¿Está seguro de eliminar el libro '" + titulo + "'?", 
+                "Confirmar eliminación", 
+                JOptionPane.YES_NO_OPTION);
+        
+        if (confirmacion == JOptionPane.YES_OPTION) {
+           Libro libro = new Libro(isbn, "", 0, 0, 0);
+            
+            if (libroDAO.eliminarLibro(libro)) {
+                JOptionPane.showMessageDialog(this, "Libro eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                limpiarFormulario();
+                cargarLibros();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el libro", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void limpiarFormulario() {
+        campoISBN.setText("");
+        campoISBN.setEditable(true);
+        campoTitulo.setText("");
+        campoAnioPublicacion.setText("");
+        comboAutores.setSelectedIndex(comboAutores.getItemCount() > 0 ? 0 : -1);
+        comboCategorias.setSelectedIndex(comboCategorias.getItemCount() > 0 ? 0 : -1);
+        tablaLibros.clearSelection();
+    }
+    
+    // Método para refrescar los datos
+    public void actualizarDatos() {
+        cargarDatos();
+    }
+}
