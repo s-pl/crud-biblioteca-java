@@ -97,14 +97,17 @@ public class VistaLibros extends JPanel {
         panelCampos.add(new JLabel("Autor:"));
         comboAutores = new JComboBox<>();
         panelCampos.add(comboAutores);
-        
+   
         panelCampos.add(new JLabel("Categoría:"));
         comboCategorias = new JComboBox<>();
         panelCampos.add(comboCategorias);
         
         panelFormulario.add(panelCampos, BorderLayout.CENTER);
         
-      
+        JButton btnActualizarAutores = new JButton("Actualizar Autores");
+        btnActualizarAutores.addActionListener(e -> cargarAutores());
+        JButton btnActualizarCategorias = new JButton("Actualizar Categorias");
+        btnActualizarCategorias.addActionListener(e -> cargarCategorias());
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
         JButton botonNuevo = new JButton("Nuevo");
@@ -119,7 +122,8 @@ public class VistaLibros extends JPanel {
         panelBotones.add(botonNuevo);
         panelBotones.add(botonGuardar);
         panelBotones.add(botonEliminar);
-        
+        panelBotones.add(btnActualizarAutores);
+        panelBotones.add(btnActualizarCategorias);
         panelFormulario.add(panelBotones, BorderLayout.SOUTH);
         
        
