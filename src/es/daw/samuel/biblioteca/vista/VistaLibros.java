@@ -28,7 +28,7 @@ public class VistaLibros extends JPanel {
     private JComboBox<String> comboAutores;
     private JComboBox<String> comboCategorias;
     
-    // Mapas para almacenar los IDs relacionados con cada ítem de los combos
+    
     private Map<String, Integer> mapaAutores;
     private Map<String, Integer> mapaCategorias;
     
@@ -47,10 +47,10 @@ public class VistaLibros extends JPanel {
     }
     
     private void inicializarComponentes() {
-        // Panel superior con la tabla
+       
         JPanel panelTabla = new JPanel(new BorderLayout());
         
-        // Crear tabla de libros
+        
         modeloLibros = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -74,11 +74,11 @@ public class VistaLibros extends JPanel {
         JScrollPane scrollPane = new JScrollPane(tablaLibros);
         panelTabla.add(scrollPane, BorderLayout.CENTER);
         
-        // Panel inferior con el formulario
+       
         JPanel panelFormulario = new JPanel(new BorderLayout());
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del Libro"));
         
-        // Campos del formulario
+       
         JPanel panelCampos = new JPanel(new GridLayout(5, 2, 10, 10));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
@@ -104,11 +104,11 @@ public class VistaLibros extends JPanel {
         
         panelFormulario.add(panelCampos, BorderLayout.CENTER);
         
-        // Panel de botones
+      
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
         JButton botonNuevo = new JButton("Nuevo");
-        botonNuevo.addActionListener(e -> limpiarFormulario());
+        botonNuevo.addActionListener(e -> guardarLibro());
         
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.addActionListener(e -> guardarLibro());
@@ -122,7 +122,7 @@ public class VistaLibros extends JPanel {
         
         panelFormulario.add(panelBotones, BorderLayout.SOUTH);
         
-        // Añadir paneles al panel principal
+       
         add(panelTabla, BorderLayout.CENTER);
         add(panelFormulario, BorderLayout.SOUTH);
     }
@@ -134,14 +134,14 @@ public class VistaLibros extends JPanel {
     }
     
     private void cargarAutores() {
-        // Limpiar combo y mapa
+        
         comboAutores.removeAllItems();
         mapaAutores.clear();
         
-        // Obtener autores de la base de datos
+       
         ArrayList<Autor> autores = autorDAO.obtenerTodosLosAutores();
         
-        // Cargar autores en el combo
+      
         for (Autor autor : autores) {
             String item = autor.getNombre();
             comboAutores.addItem(item);
@@ -150,14 +150,14 @@ public class VistaLibros extends JPanel {
     }
     
     private void cargarCategorias() {
-        // Limpiar combo y mapa
+       
         comboCategorias.removeAllItems();
         mapaCategorias.clear();
         
-        // Obtener categorías de la base de datos
+       
         ArrayList<Categoria> categorias = categoriaDAO.obtenerTodasLasCategorias();
         
-        // Cargar categorías en el combo
+       
         for (Categoria categoria : categorias) {
             String item = categoria.getNombre();
             comboCategorias.addItem(item);
@@ -166,13 +166,13 @@ public class VistaLibros extends JPanel {
     }
     
     private void cargarLibros() {
-        // Limpiar tabla
+       
         modeloLibros.setRowCount(0);
         
-        // Obtener libros de la base de datos
+       
         ArrayList<Libro> libros = libroDAO.obtenerTodosLosLibros();
         
-        // Mapa inverso de IDs a nombres
+     
         Map<Integer, String> nombresAutores = new HashMap<>();
         Map<Integer, String> nombresCategorias = new HashMap<>();
         
@@ -184,7 +184,7 @@ public class VistaLibros extends JPanel {
             nombresCategorias.put(entry.getValue(), entry.getKey());
         }
         
-        // Cargar libros en la tabla
+     
         for (Libro libro : libros) {
             String nombreAutor = nombresAutores.getOrDefault(libro.getAutor(), "Desconocido");
             String nombreCategoria = nombresCategorias.getOrDefault(libro.getCategoria(), "Desconocida");
@@ -214,7 +214,7 @@ public class VistaLibros extends JPanel {
             campoTitulo.setText(titulo);
             campoAnioPublicacion.setText(String.valueOf(anio));
             
-            // Seleccionar el autor en el combo
+           
             for (int i = 0; i < comboAutores.getItemCount(); i++) {
                 if (comboAutores.getItemAt(i).equals(autorNombre)) {
                     comboAutores.setSelectedIndex(i);
@@ -222,7 +222,7 @@ public class VistaLibros extends JPanel {
                 }
             }
             
-            // Seleccionar la categoría en el combo
+          
             for (int i = 0; i < comboCategorias.getItemCount(); i++) {
                 if (comboCategorias.getItemAt(i).equals(categoriaNombre)) {
                     comboCategorias.setSelectedIndex(i);
@@ -230,60 +230,70 @@ public class VistaLibros extends JPanel {
                 }
             }
             
-            // Deshabilitar edición del ISBN para libros existentes
+            
             campoISBN.setEditable(false);
         }
     }
     
-    private void guardarLibro() {
-        String isbn = campoISBN.getText().trim();
-        String titulo = campoTitulo.getText().trim();
-        String anioStr = campoAnioPublicacion.getText().trim();
+   private void guardarLibro() {
+    String isbn = campoISBN.getText().trim();
+    String titulo = campoTitulo.getText().trim();
+    String anioStr = campoAnioPublicacion.getText().trim();
+    
+    if (isbn.isEmpty() || titulo.isEmpty() || anioStr.isEmpty() || 
+        comboAutores.getSelectedIndex() == -1 || comboCategorias.getSelectedIndex() == -1) {
+        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    int anio;
+    try {
+        anio = Integer.parseInt(anioStr);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "El año debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    String autorSeleccionado = comboAutores.getSelectedItem().toString();
+    String categoriaSeleccionada = comboCategorias.getSelectedItem().toString();
+    
+    int autorId = mapaAutores.get(autorSeleccionado);
+    int categoriaId = mapaCategorias.get(categoriaSeleccionada);
+    
+    Libro libro = new Libro(isbn, titulo, anio, autorId, categoriaId);
+    
+    int filaSeleccionada = tablaLibros.getSelectedRow();
+    boolean esNuevo = filaSeleccionada == -1;
+    
+   
+    if (esNuevo) {
+        ArrayList<Libro> librosExistentes = libroDAO.obtenerTodosLosLibros();
         
-        if (isbn.isEmpty() || titulo.isEmpty() || anioStr.isEmpty() || 
-            comboAutores.getSelectedIndex() == -1 || comboCategorias.getSelectedIndex() == -1) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        int anio;
-        try {
-            anio = Integer.parseInt(anioStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El año debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Obtener IDs de autor y categoría seleccionados
-        String autorSeleccionado = comboAutores.getSelectedItem().toString();
-        String categoriaSeleccionada = comboCategorias.getSelectedItem().toString();
-        
-        int autorId = mapaAutores.get(autorSeleccionado);
-        int categoriaId = mapaCategorias.get(categoriaSeleccionada);
-        
-        // Crear libro
-        Libro libro = new Libro(isbn, titulo, anio, autorId, categoriaId);
-        
-        int filaSeleccionada = tablaLibros.getSelectedRow();
-        boolean esNuevo = filaSeleccionada == -1 || !campoISBN.isEditable();
-        
-        boolean resultado;
-        if (esNuevo) {
-            resultado = libroDAO.añadirLibro(libro);
-        } else {
-            resultado = libroDAO.actualizarLibroDB(libro);
-        }
-        
-        if (resultado) {
-            String mensaje = esNuevo ? "Libro agregado correctamente" : "Libro actualizado correctamente";
-            JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            limpiarFormulario();
-            cargarLibros();
-        } else {
-            String error = esNuevo ? "Error al agregar el libro" : "Error al actualizar el libro";
-            JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+        for (Libro libroExistente : librosExistentes) {
+            if (libroExistente.getIsbn().equals(isbn)) {
+                JOptionPane.showMessageDialog(this, "El ISBN ya existe en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+                return; 
+            }
         }
     }
+    
+    boolean resultado;
+    if (esNuevo) {
+        resultado = libroDAO.añadirLibro(libro);
+    } else {
+        resultado = libroDAO.actualizarLibroDB(libro);
+    }
+    
+    if (resultado) {
+        String mensaje = esNuevo ? "Libro agregado correctamente" : "Libro actualizado correctamente";
+        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        limpiarFormulario();
+        cargarLibros();
+    } else {
+        String error = esNuevo ? "Error al agregar el libro" : "Error al actualizar el libro";
+        JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     
     private void eliminarLibro() {
         int filaSeleccionada = tablaLibros.getSelectedRow();
@@ -324,7 +334,7 @@ public class VistaLibros extends JPanel {
         tablaLibros.clearSelection();
     }
     
-    // Método para refrescar los datos
+    
     public void actualizarDatos() {
         cargarDatos();
     }

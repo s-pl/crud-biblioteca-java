@@ -71,7 +71,7 @@ public class VistaAutores extends JPanel {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
         JButton botonNuevo = new JButton("Nuevo");
-        botonNuevo.addActionListener(e -> limpiarFormulario());
+        botonNuevo.addActionListener(e -> guardarAutor());
         
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.addActionListener(e -> guardarAutor());
@@ -124,7 +124,7 @@ public class VistaAutores extends JPanel {
         int filaSeleccionada = tablaAutores.getSelectedRow();
         
         if (filaSeleccionada == -1) {
-            // Añadir nuevo autor
+          
             Autor autor = new Autor(0, nombre, nacionalidad);
             if (autorDAO.añadirAutor(autor)) {
                 JOptionPane.showMessageDialog(this, "Autor agregado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -134,7 +134,7 @@ public class VistaAutores extends JPanel {
                 JOptionPane.showMessageDialog(this, "Error al agregar el autor", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            // Actualizar autor existente
+          
             int id = (int) modeloAutores.getValueAt(filaSeleccionada, 0);
             Autor autor = new Autor(id, nombre, nacionalidad);
             

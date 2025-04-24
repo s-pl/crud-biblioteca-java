@@ -78,25 +78,38 @@ public class LibroDAO {
         }
     }
 
-    public boolean añadirLibro(Libro l) {
-        Connection conn = conexion.getConn();
-        if (conn == null) {
-            System.out.println("No estás conectado a la db");
-            return false;
-        }
-        PreparedStatement pstmt = null;
+   public boolean añadirLibro(Libro l) {
+    Connection conn = conexion.getConn();
+    if (conn == null) {
+        System.out.println("No estás conectado a la db");
+        return false;
+    }
+    PreparedStatement pstmt = null;
+    try {
+        System.out.println("Intentando añadir libro con ISBN: " + l.getIsbn());
+        pstmt = conn.prepareStatement("INSERT INTO Libro (isbn, titulo, anio_publicacion, autor_id, categoria_id) VALUES (?, ?, ?, ?, ?)");
+        pstmt.setString(1, l.getIsbn());
+        pstmt.setString(2, l.getTitulo());
+        pstmt.setInt(3, l.getAnio_pub());
+        pstmt.setInt(4, l.getAutor());
+        pstmt.setInt(5, l.getCategoria());
+        
+        int filasAfectadas = pstmt.executeUpdate();
+        System.out.println("Filas afectadas: " + filasAfectadas);
+        
+     
+        
+        return filasAfectadas > 0;
+    } catch (SQLException e) {
+        System.out.println("Error al añadir libro: " + e.getMessage());
+       
+        return false;
+    } finally {
         try {
-            pstmt = conn.prepareStatement("INSERT INTO Libro (isbn, titulo, anio_publicacion, autor_id, categoria_id) VALUES (?, ?, ?, ?, ?)");
-            pstmt.setString(1, l.getIsbn());
-            pstmt.setString(2, l.getTitulo());
-            pstmt.setInt(3, l.getAnio_pub());
-            pstmt.setInt(4, l.getAutor());
-            pstmt.setInt(5, l.getCategoria());
-            pstmt.executeUpdate();
-            return true;
+            if (pstmt != null) pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return false;
+            System.out.println("Error al cerrar el statement: " + e.getMessage());
         }
     }
+}
 }
