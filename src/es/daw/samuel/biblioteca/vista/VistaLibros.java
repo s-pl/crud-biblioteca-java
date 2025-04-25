@@ -104,10 +104,7 @@ public class VistaLibros extends JPanel {
         
         panelFormulario.add(panelCampos, BorderLayout.CENTER);
         
-        JButton btnActualizarAutores = new JButton("Actualizar Autores");
-        btnActualizarAutores.addActionListener(e -> cargarAutores());
-        JButton btnActualizarCategorias = new JButton("Actualizar Categorias");
-        btnActualizarCategorias.addActionListener(e -> cargarCategorias());
+       
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
         JButton botonNuevo = new JButton("Nuevo");
@@ -122,8 +119,7 @@ public class VistaLibros extends JPanel {
         panelBotones.add(botonNuevo);
         panelBotones.add(botonGuardar);
         panelBotones.add(botonEliminar);
-        panelBotones.add(btnActualizarAutores);
-        panelBotones.add(btnActualizarCategorias);
+       
         panelFormulario.add(panelBotones, BorderLayout.SOUTH);
         
        
@@ -137,7 +133,7 @@ public class VistaLibros extends JPanel {
         cargarLibros();
     }
     
-    private void cargarAutores() {
+    public void cargarAutores() {
         
         comboAutores.removeAllItems();
         mapaAutores.clear();
@@ -153,7 +149,7 @@ public class VistaLibros extends JPanel {
         }
     }
     
-    private void cargarCategorias() {
+    public void cargarCategorias() {
        
         comboCategorias.removeAllItems();
         mapaCategorias.clear();

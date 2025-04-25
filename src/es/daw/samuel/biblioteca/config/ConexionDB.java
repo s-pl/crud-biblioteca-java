@@ -19,7 +19,7 @@ public class ConexionDB {
         try {
             conn = DriverManager.getConnection("jdbc:sqlite:biblioteca.db");
             stmt = conn.createStatement();
-            System.out.println("Conectado a la DB");
+          
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -68,7 +68,9 @@ public class ConexionDB {
             System.out.println(e.getMessage());
         }
     }
-
+    public void ConectarADBç(){
+        
+    }
     public void cerrarConexion() {
     try {
         if (stmt != null){ stmt.close();}
