@@ -1,0 +1,19 @@
+ISBN,Titulo,Año_Publicacion,Autor,Categoria
+9780307743657,Cien años de soledad,1967,1,1
+9780747532743,Harry Potter y la piedra filosofal,1997,2,4
+9780061122415,La casa de los espíritus,1982,3,1
+9788420411208,La ciudad y los perros,1963,4,5
+9780307594881,Norwegian Wood,1987,5,7
+9788483830037,Veinte poemas de amor y una canción desesperada,1924,6,6
+9780451524935,198412,1949,7,2
+9780141439518,Orgullo y prejuicio,1813,8,4
+9780805210567,El proceso del procesoooo,19142,9,9
+9780156787367,Al faro,1927,10,9
+12,12,12,1,1
+97803077436571,12,12,23,1
+1212,12,12,1,1
+' OR '1'='1,a,2025,1,1
+ad,' OR '1'='1,1,1,1
+File file = new File(userInput);,File file = new File(userInput);,2,1,1
+"\u202Ecod.exe","\u202Ecod.exe",2,1,1
+\u202Ecod.exe,\u202Ecod.exe,2132,1,1

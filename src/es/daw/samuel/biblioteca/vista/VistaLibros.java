@@ -9,26 +9,28 @@ import es.daw.samuel.biblioteca.model.Libro;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class VistaLibros extends JPanel {
-    
+
     private LibroDAO libroDAO;
     private AutorDAO autorDAO;
     private CategoriaDAO categoriaDAO;
-    
+
     private JTable tablaLibros;
     private DefaultTableModel modeloLibros;
-    
+
     private JTextField campoISBN;
     private JTextField campoTitulo;
     private JTextField campoAnioPublicacion;
     private JComboBox<String> comboAutores;
     private JComboBox<String> comboCategorias;
-    
-    
+
     private Map<String, Integer> mapaAutores;
     private Map<String, Integer> mapaCategorias;
     
@@ -36,21 +38,20 @@ public class VistaLibros extends JPanel {
         libroDAO = new LibroDAO();
         autorDAO = new AutorDAO();
         categoriaDAO = new CategoriaDAO();
-        
+
         mapaAutores = new HashMap<>();
         mapaCategorias = new HashMap<>();
-        
+
         setLayout(new BorderLayout());
-        
+
         inicializarComponentes();
         cargarDatos();
     }
-    
+
     private void inicializarComponentes() {
-       
+
         JPanel panelTabla = new JPanel(new BorderLayout());
-        
-        
+
         modeloLibros = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -62,7 +63,7 @@ public class VistaLibros extends JPanel {
         modeloLibros.addColumn("Año");
         modeloLibros.addColumn("Autor");
         modeloLibros.addColumn("Categoría");
-        
+
         tablaLibros = new JTable(modeloLibros);
         tablaLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaLibros.getSelectionModel().addListSelectionListener(e -> {
@@ -70,125 +71,115 @@ public class VistaLibros extends JPanel {
                 mostrarLibroSeleccionado();
             }
         });
-        
+
         JScrollPane scrollPane = new JScrollPane(tablaLibros);
         panelTabla.add(scrollPane, BorderLayout.CENTER);
-        
-       
+
         JPanel panelFormulario = new JPanel(new BorderLayout());
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del Libro"));
-        
-       
+
         JPanel panelCampos = new JPanel(new GridLayout(5, 2, 10, 10));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         panelCampos.add(new JLabel("ISBN:"));
         campoISBN = new JTextField();
         panelCampos.add(campoISBN);
-        
+
         panelCampos.add(new JLabel("Título:"));
         campoTitulo = new JTextField();
         panelCampos.add(campoTitulo);
-        
+
         panelCampos.add(new JLabel("Año de Publicación:"));
         campoAnioPublicacion = new JTextField();
         panelCampos.add(campoAnioPublicacion);
-        
+
         panelCampos.add(new JLabel("Autor:"));
         comboAutores = new JComboBox<>();
         panelCampos.add(comboAutores);
-   
+
         panelCampos.add(new JLabel("Categoría:"));
         comboCategorias = new JComboBox<>();
         panelCampos.add(comboCategorias);
-        
+
         panelFormulario.add(panelCampos, BorderLayout.CENTER);
-        
-       
+
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        
+
         JButton botonNuevo = new JButton("Nuevo");
         botonNuevo.addActionListener(e -> guardarLibro());
-        
+        JButton botonExportarAcsv = new JButton("Exportar a CSV");
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.addActionListener(e -> guardarLibro());
-        
+        botonExportarAcsv.addActionListener(e -> exportarACSV());
         JButton botonEliminar = new JButton("Eliminar");
         botonEliminar.addActionListener(e -> eliminarLibro());
-        
+
         panelBotones.add(botonNuevo);
         panelBotones.add(botonGuardar);
         panelBotones.add(botonEliminar);
-       
+        panelBotones.add(botonExportarAcsv);
+
         panelFormulario.add(panelBotones, BorderLayout.SOUTH);
-        
-       
+
         add(panelTabla, BorderLayout.CENTER);
         add(panelFormulario, BorderLayout.SOUTH);
     }
-    
+
     private void cargarDatos() {
         cargarAutores();
         cargarCategorias();
         cargarLibros();
     }
-    
+
     public void cargarAutores() {
-        
+
         comboAutores.removeAllItems();
         mapaAutores.clear();
-        
-       
+
         ArrayList<Autor> autores = autorDAO.obtenerTodosLosAutores();
-        
-      
+
         for (Autor autor : autores) {
             String item = autor.getNombre();
             comboAutores.addItem(item);
             mapaAutores.put(item, autor.getId());
         }
     }
-    
+
     public void cargarCategorias() {
-       
+
         comboCategorias.removeAllItems();
         mapaCategorias.clear();
-        
-       
+
         ArrayList<Categoria> categorias = categoriaDAO.obtenerTodasLasCategorias();
-        
-       
+
         for (Categoria categoria : categorias) {
             String item = categoria.getNombre();
             comboCategorias.addItem(item);
             mapaCategorias.put(item, categoria.getId());
         }
     }
-    
+
     private void cargarLibros() {
-       
+
         modeloLibros.setRowCount(0);
-        
-       
+
         ArrayList<Libro> libros = libroDAO.obtenerTodosLosLibros();
-        
-     
+
         Map<Integer, String> nombresAutores = new HashMap<>();
         Map<Integer, String> nombresCategorias = new HashMap<>();
-        
+
         for (Map.Entry<String, Integer> entry : mapaAutores.entrySet()) {
             nombresAutores.put(entry.getValue(), entry.getKey());
         }
-        
+
         for (Map.Entry<String, Integer> entry : mapaCategorias.entrySet()) {
             nombresCategorias.put(entry.getValue(), entry.getKey());
         }
-        
-     
+
         for (Libro libro : libros) {
             String nombreAutor = nombresAutores.getOrDefault(libro.getAutor(), "Desconocido");
             String nombreCategoria = nombresCategorias.getOrDefault(libro.getCategoria(), "Desconocida");
-            
+
             Object[] fila = {
                 libro.getIsbn(),
                 libro.getTitulo(),
@@ -196,11 +187,11 @@ public class VistaLibros extends JPanel {
                 nombreAutor,
                 nombreCategoria
             };
-            
+
             modeloLibros.addRow(fila);
         }
     }
-    
+
     private void mostrarLibroSeleccionado() {
         int fila = tablaLibros.getSelectedRow();
         if (fila != -1) {
@@ -209,111 +200,107 @@ public class VistaLibros extends JPanel {
             int anio = (int) modeloLibros.getValueAt(fila, 2);
             String autorNombre = (String) modeloLibros.getValueAt(fila, 3);
             String categoriaNombre = (String) modeloLibros.getValueAt(fila, 4);
-            
+
             campoISBN.setText(isbn);
             campoTitulo.setText(titulo);
             campoAnioPublicacion.setText(String.valueOf(anio));
-            
-           
+
             for (int i = 0; i < comboAutores.getItemCount(); i++) {
                 if (comboAutores.getItemAt(i).equals(autorNombre)) {
                     comboAutores.setSelectedIndex(i);
                     break;
                 }
             }
-            
-          
+
             for (int i = 0; i < comboCategorias.getItemCount(); i++) {
                 if (comboCategorias.getItemAt(i).equals(categoriaNombre)) {
                     comboCategorias.setSelectedIndex(i);
                     break;
                 }
             }
-            
-            
+
             campoISBN.setEditable(false);
         }
     }
-    
-   private void guardarLibro() {
-    String isbn = campoISBN.getText().trim();
-    String titulo = campoTitulo.getText().trim();
-    String anioStr = campoAnioPublicacion.getText().trim();
-    
-    if (isbn.isEmpty() || titulo.isEmpty() || anioStr.isEmpty() || 
-        comboAutores.getSelectedIndex() == -1 || comboCategorias.getSelectedIndex() == -1) {
-        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    int anio;
-    try {
-        anio = Integer.parseInt(anioStr);
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "El año debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    String autorSeleccionado = comboAutores.getSelectedItem().toString();
-    String categoriaSeleccionada = comboCategorias.getSelectedItem().toString();
-    
-    int autorId = mapaAutores.get(autorSeleccionado);
-    int categoriaId = mapaCategorias.get(categoriaSeleccionada);
-    
-    Libro libro = new Libro(isbn, titulo, anio, autorId, categoriaId);
-    
-    int filaSeleccionada = tablaLibros.getSelectedRow();
-    boolean esNuevo = filaSeleccionada == -1;
-    
-   
-    if (esNuevo) {
-        ArrayList<Libro> librosExistentes = libroDAO.obtenerTodosLosLibros();
-        
-        for (Libro libroExistente : librosExistentes) {
-            if (libroExistente.getIsbn().equals(isbn)) {
-                JOptionPane.showMessageDialog(this, "El ISBN ya existe en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-                return; 
+
+    private void guardarLibro() {
+        String isbn = campoISBN.getText().trim();
+        String titulo = campoTitulo.getText().trim();
+        String anioStr = campoAnioPublicacion.getText().trim();
+
+        if (isbn.isEmpty() || titulo.isEmpty() || anioStr.isEmpty()
+                || comboAutores.getSelectedIndex() == -1 || comboCategorias.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int anio;
+        try {
+            anio = Integer.parseInt(anioStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El año debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String autorSeleccionado = comboAutores.getSelectedItem().toString();
+        String categoriaSeleccionada = comboCategorias.getSelectedItem().toString();
+
+        int autorId = mapaAutores.get(autorSeleccionado);
+        int categoriaId = mapaCategorias.get(categoriaSeleccionada);
+
+        Libro libro = new Libro(isbn, titulo, anio, autorId, categoriaId);
+
+        int filaSeleccionada = tablaLibros.getSelectedRow();
+        boolean esNuevo = filaSeleccionada == -1;
+
+        if (esNuevo) {
+            ArrayList<Libro> librosExistentes = libroDAO.obtenerTodosLosLibros();
+
+            for (Libro libroExistente : librosExistentes) {
+                if (libroExistente.getIsbn().equals(isbn)) {
+                    JOptionPane.showMessageDialog(this, "El ISBN ya existe en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
         }
+
+        boolean resultado;
+        if (esNuevo) {
+            resultado = libroDAO.añadirLibro(libro);
+        } else {
+            resultado = libroDAO.actualizarLibroDB(libro);
+        }
+
+        if (resultado) {
+            String mensaje = esNuevo ? "Libro agregado correctamente" : "Libro actualizado correctamente";
+            JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            limpiarFormulario();
+            cargarLibros();
+        } else {
+            String error = esNuevo ? "Error al agregar el libro" : "Error al actualizar el libro";
+            JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-    
-    boolean resultado;
-    if (esNuevo) {
-        resultado = libroDAO.añadirLibro(libro);
-    } else {
-        resultado = libroDAO.actualizarLibroDB(libro);
-    }
-    
-    if (resultado) {
-        String mensaje = esNuevo ? "Libro agregado correctamente" : "Libro actualizado correctamente";
-        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        limpiarFormulario();
-        cargarLibros();
-    } else {
-        String error = esNuevo ? "Error al agregar el libro" : "Error al actualizar el libro";
-        JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-    
+
     private void eliminarLibro() {
         int filaSeleccionada = tablaLibros.getSelectedRow();
-        
+
         if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un libro", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         String isbn = (String) modeloLibros.getValueAt(filaSeleccionada, 0);
         String titulo = (String) modeloLibros.getValueAt(filaSeleccionada, 1);
-        
-        int confirmacion = JOptionPane.showConfirmDialog(this, 
-                "¿Está seguro de eliminar el libro '" + titulo + "'?", 
-                "Confirmar eliminación", 
+
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de eliminar el libro '" + titulo + "'?",
+                "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION);
-        
+
         if (confirmacion == JOptionPane.YES_OPTION) {
-           Libro libro = new Libro(isbn, "", 0, 0, 0);
-            
+            Libro libro = new Libro(isbn, "", 0, 0, 0);
+
             if (libroDAO.eliminarLibro(libro)) {
                 JOptionPane.showMessageDialog(this, "Libro eliminado correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 limpiarFormulario();
@@ -323,7 +310,7 @@ public class VistaLibros extends JPanel {
             }
         }
     }
-    
+
     private void limpiarFormulario() {
         campoISBN.setText("");
         campoISBN.setEditable(true);
@@ -333,9 +320,43 @@ public class VistaLibros extends JPanel {
         comboCategorias.setSelectedIndex(comboCategorias.getItemCount() > 0 ? 0 : -1);
         tablaLibros.clearSelection();
     }
-    
-    
+
     public void actualizarDatos() {
         cargarDatos();
     }
+
+   public void exportarACSV() {
+    String nombreArchivo = "libros.csv";
+
+    try (FileWriter writer = new FileWriter(nombreArchivo)) {
+
+        writer.append("ISBN,Titulo,Año_Publicacion,Autor,Categoria\n");
+
+        for (Libro libro : libroDAO.obtenerTodosLosLibros()) {
+            writer.append(libro.getIsbn())
+                  .append(",")
+                  .append(libro.getTitulo())
+                  .append(",")
+                  .append(String.valueOf(libro.getAnio_pub()))
+                  .append(",")
+                  .append(String.valueOf(libro.getAutor()))
+                  .append(",")
+                  .append(String.valueOf(libro.getCategoria()))
+                  .append("\n");
+        }
+
+        JOptionPane.showMessageDialog(null,
+            "Libros exportados correctamente a CSV: " + nombreArchivo, 
+            "",
+            JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null,
+            e,
+            "",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+}
+
+
 }
