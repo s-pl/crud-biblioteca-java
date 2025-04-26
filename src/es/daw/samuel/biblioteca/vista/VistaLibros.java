@@ -9,12 +9,14 @@ import es.daw.samuel.biblioteca.model.Libro;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import java.io.BufferedReader;
 
 public class VistaLibros extends JPanel {
 
@@ -33,7 +35,7 @@ public class VistaLibros extends JPanel {
 
     private Map<String, Integer> mapaAutores;
     private Map<String, Integer> mapaCategorias;
-    
+
     public VistaLibros() {
         libroDAO = new LibroDAO();
         autorDAO = new AutorDAO();
@@ -108,9 +110,11 @@ public class VistaLibros extends JPanel {
         JButton botonNuevo = new JButton("Nuevo");
         botonNuevo.addActionListener(e -> guardarLibro());
         JButton botonExportarAcsv = new JButton("Exportar a CSV");
+        botonExportarAcsv.addActionListener(e -> exportarACSV());
+        JButton botonImportarCsv = new JButton("Importar CSV");
+        botonImportarCsv.addActionListener(e -> elegirArchivo());
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.addActionListener(e -> guardarLibro());
-        botonExportarAcsv.addActionListener(e -> exportarACSV());
         JButton botonEliminar = new JButton("Eliminar");
         botonEliminar.addActionListener(e -> eliminarLibro());
 
@@ -118,6 +122,7 @@ public class VistaLibros extends JPanel {
         panelBotones.add(botonGuardar);
         panelBotones.add(botonEliminar);
         panelBotones.add(botonExportarAcsv);
+        panelBotones.add(botonImportarCsv);
 
         panelFormulario.add(panelBotones, BorderLayout.SOUTH);
 
@@ -125,7 +130,7 @@ public class VistaLibros extends JPanel {
         add(panelFormulario, BorderLayout.SOUTH);
     }
 
-    private void cargarDatos() {
+    void cargarDatos() {
         cargarAutores();
         cargarCategorias();
         cargarLibros();
@@ -159,7 +164,7 @@ public class VistaLibros extends JPanel {
         }
     }
 
-    private void cargarLibros() {
+    public void cargarLibros() {
 
         modeloLibros.setRowCount(0);
 
@@ -224,6 +229,7 @@ public class VistaLibros extends JPanel {
     }
 
     private void guardarLibro() {
+        
         String isbn = campoISBN.getText().trim();
         String titulo = campoTitulo.getText().trim();
         String anioStr = campoAnioPublicacion.getText().trim();
@@ -254,6 +260,7 @@ public class VistaLibros extends JPanel {
         boolean esNuevo = filaSeleccionada == -1;
 
         if (esNuevo) {
+            
             ArrayList<Libro> librosExistentes = libroDAO.obtenerTodosLosLibros();
 
             for (Libro libroExistente : librosExistentes) {
@@ -325,38 +332,105 @@ public class VistaLibros extends JPanel {
         cargarDatos();
     }
 
-   public void exportarACSV() {
-    String nombreArchivo = "libros.csv";
+    public void exportarACSV() {
+        String nombreArchivo = "libros.csv";
 
-    try (FileWriter writer = new FileWriter(nombreArchivo)) {
+        try (FileWriter writer = new FileWriter(nombreArchivo)) {
 
-        writer.append("ISBN,Titulo,Año_Publicacion,Autor,Categoria\n");
+            writer.append("ISBN,Titulo,Año_Publicacion,Autor,Categoria\n");
 
-        for (Libro libro : libroDAO.obtenerTodosLosLibros()) {
-            writer.append(libro.getIsbn())
-                  .append(",")
-                  .append(libro.getTitulo())
-                  .append(",")
-                  .append(String.valueOf(libro.getAnio_pub()))
-                  .append(",")
-                  .append(String.valueOf(libro.getAutor()))
-                  .append(",")
-                  .append(String.valueOf(libro.getCategoria()))
-                  .append("\n");
+            for (Libro libro : libroDAO.obtenerTodosLosLibros()) {
+                writer.append(libro.getIsbn())
+                        .append(",")
+                        .append(libro.getTitulo())
+                        .append(",")
+                        .append(String.valueOf(libro.getAnio_pub()))
+                        .append(",")
+                        .append(String.valueOf(libro.getAutor()))
+                        .append(",")
+                        .append(String.valueOf(libro.getCategoria()))
+                        .append("\n");
+            }
+
+            JOptionPane.showMessageDialog(null,
+                    "Libros exportados correctamente a CSV: " + nombreArchivo,
+                    "Exportación exitosa",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,
+                    "Error al exportar CSV: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-
-        JOptionPane.showMessageDialog(null,
-            "Libros exportados correctamente a CSV: " + nombreArchivo, 
-            "",
-            JOptionPane.INFORMATION_MESSAGE);
-
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(null,
-            e,
-            "",
-            JOptionPane.INFORMATION_MESSAGE);
     }
-}
+    private void elegirArchivo(){
+        String archivo;
 
+        try {
+            FileDialog dialog = new FileDialog((Frame) null, "Selecciona el archivo a abrir");
+            dialog.setMode(FileDialog.LOAD);
+            dialog.setVisible(true);
+           if(dialog.getFile().endsWith(".csv")){
+               archivo = dialog.getDirectory() + dialog.getFile();
+               dialog.dispose();
+               importarCSV(archivo);
+           } else {
+                JOptionPane.showMessageDialog(null,
+                   "No has elegido un archivo csv.",
+                    "Error en la importación",
+                    JOptionPane.INFORMATION_MESSAGE);
+           }
+            
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    private void importarCSV(String archivo) {
+        
 
+        String nombreArchivo = archivo;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
+            String line;
+            boolean primeraLinea = true;
+
+            while ((line = br.readLine()) != null) {
+                if (primeraLinea) {
+                    primeraLinea = false;
+                    continue;
+                }
+
+                String[] values = line.split(",");
+
+                if (values.length >= 5) {
+                    try {
+                        String isbn = values[0].trim();
+                        String titulo = values[1].trim();
+                        int anio = Integer.parseInt(values[2].trim());
+                        int autorId = Integer.parseInt(values[3].trim());
+                        int categoriaId = Integer.parseInt(values[4].trim());
+
+                        Libro libro = new Libro(isbn, titulo, anio, autorId, categoriaId);
+                        libroDAO.añadirLibro(libro);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error en línea: " + line + " - " + e.getMessage());
+                    }
+                }
+            }
+
+            JOptionPane.showMessageDialog(null,
+                    "Libros importados correctamente desde CSV: " + nombreArchivo,
+                    "Importación exitosa",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            cargarLibros();
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,
+                    "Error al importar CSV: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
