@@ -6,7 +6,7 @@
 > 🎯 Una aplicación moderna y eficiente para la gestión de bibliotecas, desarrollada con Java Swing y SQLite.
 
 
- ![image](https://i.ibb.co/JSnKcHn/image.png) 
+
 ## ✨ Características Principales
 
 - 🖥️ Interfaz gráfica moderna e intuitiva desarrollada con Java Swing
