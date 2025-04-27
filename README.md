@@ -1,7 +1,6 @@
 # 📚 CRUD Biblioteca Java
 
 [![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizada-green)]()
-[![Licencia](https://img.shields.io/badge/Licencia-MIT-blue.svg)]()
 [![JDK](https://img.shields.io/badge/JDK-%3E%3D%208-orange)]()
 
 > 🎯 Una aplicación moderna y eficiente para la gestión de bibliotecas, desarrollada con Java Swing y SQLite.
