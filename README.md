@@ -4,6 +4,8 @@
 [![JDK](https://img.shields.io/badge/JDK-%3E%3D%208-orange)]()
 
 > 🎯 Una aplicación moderna y eficiente para la gestión de bibliotecas, desarrollada con Java Swing y SQLite.
+
+
  ![image](https://i.ibb.co/JSnKcHn/image.png) 
 ## ✨ Características Principales
 
