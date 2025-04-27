@@ -1,10 +1,13 @@
 # 📚 CRUD Biblioteca Java
 
-[![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizada-green)]()
+[![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizado-green)]()
 [![JDK](https://img.shields.io/badge/JDK-%3E%3D%208-orange)]()
 
 > 🎯 Una aplicación moderna y eficiente para la gestión de bibliotecas, desarrollada con Java Swing y SQLite.
+ 
 
+
+ ![image](https://i.ibb.co/JSnKcHn/image.png) 
 ## ✨ Características Principales
 
 - 🖥️ Interfaz gráfica moderna e intuitiva desarrollada con Java Swing
@@ -25,10 +28,9 @@
   - [Descarga NetBeans](https://netbeans.apache.org/download/)
   - Versión 8.2 o superior recomendada
 
-- 📦 SQLite JDBC Driver & Lombok
-  - Se incluyen en el proyecto
-  - Versión: >=3.36.0.3 
-  
+- 📦 SQLite JDBC Driver
+  - Se incluye en el proyecto
+  - Versión: 3.36.0.3
 
 ## 🚀 Guía de Instalación
 
