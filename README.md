@@ -28,7 +28,7 @@
   - [Descarga NetBeans](https://netbeans.apache.org/download/)
   - Versión 8.2 o superior recomendada
 
-- 📦 SQLite JDBC Driver
+- 📦 SQLite JDBC Driver & Lombok
   - Se incluye en el proyecto
   - Versión: 3.36.0.3
 
