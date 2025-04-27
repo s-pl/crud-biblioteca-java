@@ -78,7 +78,7 @@ public class VistaLibros extends JPanel {
         panelTabla.add(scrollPane, BorderLayout.CENTER);
 
         JPanel panelFormulario = new JPanel(new BorderLayout());
-        panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del Libro"));
+        
 
         JPanel panelCampos = new JPanel(new GridLayout(5, 2, 10, 10));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -117,13 +117,17 @@ public class VistaLibros extends JPanel {
         botonGuardar.addActionListener(e -> guardarLibro());
         JButton botonEliminar = new JButton("Eliminar");
         botonEliminar.addActionListener(e -> eliminarLibro());
-
+        JButton botonFiltrarAutor = new JButton("Filtrar por autor");
+        JButton botonFiltrarCategoria = new JButton("Filtrar por categoria");
+        botonFiltrarAutor.addActionListener(e -> filtrarPorAutor());
+        botonFiltrarCategoria.addActionListener(e -> filtrarPorCategoria());
         panelBotones.add(botonNuevo);
         panelBotones.add(botonGuardar);
         panelBotones.add(botonEliminar);
         panelBotones.add(botonExportarAcsv);
         panelBotones.add(botonImportarCsv);
-
+        panelBotones.add(botonFiltrarAutor);
+        panelBotones.add(botonFiltrarCategoria);
         panelFormulario.add(panelBotones, BorderLayout.SOUTH);
 
         add(panelTabla, BorderLayout.CENTER);
@@ -229,7 +233,7 @@ public class VistaLibros extends JPanel {
     }
 
     private void guardarLibro() {
-        
+
         String isbn = campoISBN.getText().trim();
         String titulo = campoTitulo.getText().trim();
         String anioStr = campoAnioPublicacion.getText().trim();
@@ -260,7 +264,7 @@ public class VistaLibros extends JPanel {
         boolean esNuevo = filaSeleccionada == -1;
 
         if (esNuevo) {
-            
+
             ArrayList<Libro> librosExistentes = libroDAO.obtenerTodosLosLibros();
 
             for (Libro libroExistente : librosExistentes) {
@@ -364,30 +368,31 @@ public class VistaLibros extends JPanel {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-    private void elegirArchivo(){
+
+    private void elegirArchivo() {
         String archivo;
 
         try {
             FileDialog dialog = new FileDialog((Frame) null, "Selecciona el archivo a abrir");
             dialog.setMode(FileDialog.LOAD);
             dialog.setVisible(true);
-           if(dialog.getFile().endsWith(".csv")){
-               archivo = dialog.getDirectory() + dialog.getFile();
-               dialog.dispose();
-               importarCSV(archivo);
-           } else {
+            if (dialog.getFile().endsWith(".csv")) {
+                archivo = dialog.getDirectory() + dialog.getFile();
+                dialog.dispose();
+                importarCSV(archivo);
+            } else {
                 JOptionPane.showMessageDialog(null,
-                   "No has elegido un archivo csv.",
-                    "Error en la importación",
-                    JOptionPane.INFORMATION_MESSAGE);
-           }
-            
+                        "No has elegido un archivo csv.",
+                        "Error en la importación",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
+
     private void importarCSV(String archivo) {
-        
 
         String nombreArchivo = archivo;
 
@@ -432,5 +437,121 @@ public class VistaLibros extends JPanel {
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void filtrarPorAutor() {
+        try {
+            var autorIntroducido = JOptionPane.showInputDialog("¿Por cual autor quieres filtrar?");
+            if (autorIntroducido == null) {
+                return; 
+            }
+            
+            if (autorIntroducido.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "El autor sin nombre todavía no existe");
+            } else {
+                modeloLibros.setRowCount(0); 
+                boolean autorEncontrado = false;
+                
+                for (Autor x : autorDAO.obtenerTodosLosAutores()) {
+                    if (autorIntroducido.equalsIgnoreCase(x.getNombre())) {
+                        autorEncontrado = true;
+                        int autorId = x.getId();
+                        
+                        
+                        for (Libro y : libroDAO.obtenerTodosLosLibros()) {
+                            if (y.getAutor() == autorId) {
+                               
+                                Object[] fila = {
+                                    y.getIsbn(),
+                                    y.getTitulo(),
+                                    y.getAnio_pub(),
+                                    x.getNombre(),
+                                    obtenerNombreCategoria(y.getCategoria()) 
+                                };
+                                modeloLibros.addRow(fila);
+                            }
+                        }
+                        break;
+                    }
+                }
+                
+                if (!autorEncontrado) {
+                    JOptionPane.showMessageDialog(null, "No se encontró ningún autor con ese nombre");
+                } else if (modeloLibros.getRowCount() == 0) {
+                    JOptionPane.showMessageDialog(null, "El autor existe pero no hay libros registrados");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error al filtrar por autor: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al filtrar por autor: " + e.getMessage(), 
+                                         "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void filtrarPorCategoria() {
+        try {
+            var categoriaIntroducida = JOptionPane.showInputDialog("¿Por cuál categoría quieres filtrar?");
+            if (categoriaIntroducida == null) {
+                return; 
+            }
+            
+            if (categoriaIntroducida.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "La categoría sin nombre todavía no existe");
+            } else {
+                modeloLibros.setRowCount(0); 
+                boolean categoriaEncontrada = false;
+                
+                for (Categoria x : categoriaDAO.obtenerTodasLasCategorias()) {
+                    if (categoriaIntroducida.equalsIgnoreCase(x.getNombre())) {
+                        categoriaEncontrada = true;
+                        int categoriaId = x.getId();
+                        
+                      
+                        for (Libro y : libroDAO.obtenerTodosLosLibros()) {
+                            if (y.getCategoria() == categoriaId) {
+                                
+                                Object[] fila = {
+                                    y.getIsbn(),
+                                    y.getTitulo(),
+                                    y.getAnio_pub(),
+                                    obtenerNombreAutor(y.getAutor()), 
+                                    x.getNombre() 
+                                };
+                                modeloLibros.addRow(fila);
+                            }
+                        }
+                        break;
+                    }
+                }
+                
+                if (!categoriaEncontrada) {
+                    JOptionPane.showMessageDialog(null, "No se encontró ninguna categoría con ese nombre");
+                } else if (modeloLibros.getRowCount() == 0) {
+                    JOptionPane.showMessageDialog(null, "La categoría existe pero no hay libros registrados");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error al filtrar por categoría: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al filtrar por categoría: " + e.getMessage(), 
+                                         "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+  
+    private String obtenerNombreAutor(int autorId) {
+        for (Autor aut : autorDAO.obtenerTodosLosAutores()) {
+            if (aut.getId() == autorId) {
+                return aut.getNombre();
+            }
+        }
+        return "Autor desconocido";
+    }
+  
+    private String obtenerNombreCategoria(int categoriaId) {
+        for (Categoria cat : categoriaDAO.obtenerTodasLasCategorias()) {
+            if (cat.getId() == categoriaId) {
+                return cat.getNombre();
+            }
+        }
+        return "Categoría desconocida";
     }
 }
