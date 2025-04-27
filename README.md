@@ -1,6 +1,6 @@
 # 📚 CRUD Biblioteca Java
 
-[![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-green)]()
+[![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizada-green)]()
 [![Licencia](https://img.shields.io/badge/Licencia-MIT-blue.svg)]()
 [![JDK](https://img.shields.io/badge/JDK-%3E%3D%208-orange)]()
 
