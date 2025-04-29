@@ -1,134 +1,126 @@
-# 📚 CRUD Biblioteca Java
+# Sistema de Gestión de Biblioteca
 
-[![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizado-green)]()
-[![JDK](https://img.shields.io/badge/JDK-%3E%3D%208-orange)]()
+Este proyecto implementa un sistema de gestión de biblioteca utilizando Java y Swing para la interfaz gráfica. El sistema sigue una arquitectura MVC (Modelo-Vista-Controlador) y utiliza el patrón DAO (Data Access Object) para la persistencia de datos.
 
-> 🎯 Una aplicación moderna y eficiente para la gestión de bibliotecas, desarrollada con Java Swing y SQLite.
+## Arquitectura del Sistema
 
-
-
-## ✨ Características Principales
-
-- 🖥️ Interfaz gráfica moderna e intuitiva desarrollada con Java Swing
-- 📑 Sistema de pestañas para una gestión organizada
-- 📝 CRUD completo para libros, autores y categorías
-- 🗄️ Base de datos SQLite para almacenamiento persistente
-- ⚙️ Sistema de configuración personalizable
-
-## ⚠️ Requisitos Previos
-
-> **¡IMPORTANTE!** Asegúrate de tener instalado todo lo siguiente antes de comenzar:
-
-- ☕ Java Development Kit (JDK) 8 o superior
-  - Puedes descargarlo desde [Oracle](https://www.oracle.com/java/technologies/downloads/)
-  - Verifica tu instalación con `java -version` en la terminal
-
-- 🔧 NetBeans IDE (recomendado)
-  - [Descarga NetBeans](https://netbeans.apache.org/download/)
-  - Versión 8.2 o superior recomendada
-
-- 📦 SQLite JDBC Driver & Lombok
-  - Se incluye en el proyecto
-  - Versión: 3.36.0.3
-
-## 🚀 Guía de Instalación
-
-1. **Clonar el Repositorio**
-   ```bash
-   git clone https://github.com/s-pl/crud-biblioteca-java
-   ```
-
-2. **Configuración en NetBeans**
-   - Abrir NetBeans IDE
-   - File -> Open Project
-   - Navegar hasta la carpeta del proyecto
-   - Seleccionar y abrir
-
-3. **Verificar Dependencias**
-   - Clic derecho en el proyecto
-   - Properties -> Libraries
-   - Verificar que SQLite JDBC está incluido y configurado, al igual que Lombok
-
-4. **Compilar y Ejecutar**
-   - Clic derecho en el proyecto
-   - Clean and Build
-   - Run Project (F6)
-
-## 📂 Estructura del Proyecto
+### Estructura del Proyecto
 
 ```
-src/
-└── es/daw/samuel/biblioteca/
-    ├── Biblioteca.java           # Clase principal
-    ├── config/
-    │   └── ConexionDB.java      # Gestión de conexión a base de datos
-    ├── dao/
-    │   ├── AutorDAO.java        # Acceso a datos de autores
-    │   ├── CategoriaDAO.java    # Acceso a datos de categorías
-    │   └── LibroDAO.java        # Acceso a datos de libros
-    ├── model/
-    │   ├── Autor.java           # Modelo de autor
-    │   ├── Categoria.java       # Modelo de categoría
-    │   └── Libro.java           # Modelo de libro
-    └── vista/
-        ├── BibliotecaApp.java   # Ventana principal
-        ├── VistaAutores.java    # Panel de gestión de autores
-        ├── VistaCategorias.java # Panel de gestión de categorías
-        ├── VistaConfig.java     # Panel de configuración
-        └── VistaLibros.java     # Panel de gestión de libros
+src/es/daw/samuel/biblioteca/
+├── Biblioteca.java           # Punto de entrada de la aplicación
+├── config/                   # Configuración de la base de datos
+│   └── ConexionDB.java
+├── dao/                      # Capa de acceso a datos
+│   ├── AutorDAO.java
+│   ├── CategoriaDAO.java
+│   └── LibroDAO.java
+├── model/                    # Modelos de datos
+│   ├── Autor.java
+│   ├── Categoria.java
+│   └── Libro.java
+└── vista/                    # Interfaces gráficas
+    ├── BibliotecaApp.java
+    ├── VistaAutores.java
+    ├── VistaCategorias.java
+    ├── VistaConfig.java
+    └── VistaLibros.java
 ```
 
-## 📖 Guía de Uso
+### Capas de la Aplicación
 
-### 📚 Gestión de Libros
-- ➕ **Agregar Libro**: Botón "Nuevo" en la pestaña Libros
-- 📝 **Editar Libro**: Seleccionar libro y usar botón "Editar"
-- 🗑️ **Eliminar Libro**: Seleccionar y confirmar eliminación
+1. **Capa de Presentación (Vista)**
+   - Implementada con Java Swing
+   - Interfaces gráficas separadas para cada entidad
+   - Sistema de pestañas para navegación
+   - Soporte para múltiples temas visuales
 
-### 🔍 Búsqueda y Filtros
+2. **Capa de Acceso a Datos (DAO)**
+   - Implementación del patrón DAO para cada entidad
+   - Operaciones CRUD independientes
+   - Gestión de conexiones a base de datos
 
-- Filtros para categorías y autores
+3. **Capa de Modelo**
+   - Clases de entidad para Libros, Autores y Categorías
+   - Implementación de relaciones entre entidades
 
+## Componentes Principales
 
+### Gestión de Base de Datos
+- Configuración centralizada en `ConexionDB.java`
+- Operaciones de creación y destrucción de base de datos
+- Verificación de estado de conexión
 
+### Interfaz de Usuario
+- **BibliotecaApp**: Ventana principal con sistema de pestañas
+- **VistaLibros**: Gestión de libros y sus relaciones
+- **VistaAutores**: Administración de autores
+- **VistaCategorias**: Gestión de categorías
+- **VistaConfig**: Configuración del sistema y base de datos
 
-## ⚠️ Advertencias Importantes
+### Características de la Interfaz
+- Sistema de pestañas para navegación intuitiva
+- Actualización automática de datos entre vistas
+- Personalización de temas visuales
+- Validación de entrada de datos
 
-- **Backup**: Realiza copias de seguridad regulares de `biblioteca.db`
-- **Memoria**: Se recomienda mínimo 4GB de RAM para un funcionamiento óptimo
-- **Permisos**: Asegúrate de tener permisos de escritura en la carpeta de instalación
+## Funcionalidades Técnicas
 
-## 🔧 Solución de Problemas Comunes
+### Gestión de Libros
+- CRUD completo de libros
+- Asociación con autores y categorías
+- Validación de datos de entrada
+- Actualización automática de listados
 
-### Error de Conexión a Base de Datos
-1. Verificar que `biblioteca.db` existe en la ruta correcta
-2. Comprobar permisos de escritura
-3. Reiniciar la aplicación
+### Gestión de Autores
+- Mantenimiento de información de autores
+- Vinculación con libros
+- Actualización en tiempo real
 
-### La Interfaz No Responde
-1. Verificar memoria disponible
-2. Cerrar y reabrir la aplicación
-3. Comprobar logs en la carpeta del proyecto
+### Gestión de Categorías
+- Clasificación de libros por categorías
+- Sistema de categorización flexible
+- Actualización automática de relaciones
 
+### Configuración del Sistema
+- Gestión de conexión a base de datos
+- Creación y destrucción de esquema de datos
+- Cambio de temas visuales en tiempo real
 
+## Requisitos Técnicos
 
-## 👥 Contribuir
+### Requisitos del Sistema
+- Java Runtime Environment (JRE) 8 o superior
+- Sistema de gestión de base de datos compatible
+- Memoria RAM: 2GB mínimo recomendado
+- Espacio en disco: 100MB mínimo
 
-1. Haz un Fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+### Dependencias Principales
+- Java Swing para la interfaz gráfica
+- JDBC para conexión a base de datos
+- Bibliotecas estándar de Java
 
-## ❓ FAQ
+## Guía de Instalación
 
-**P**: ¿Puedo usar la aplicación sin NetBeans?
-**R**: Sí, puedes usar cualquier IDE que soporte Java, pero NetBeans está recomendado para mejor compatibilidad.
+1. Asegurar la instalación de JRE 8 o superior
+2. Configurar la base de datos según los parámetros en ConexionDB
+3. Compilar el proyecto usando el sistema de build proporcionado
+4. Ejecutar la clase principal Biblioteca.java
+5. Usar la interfaz de configuración para inicializar la base de datos
 
-**P**: ¿Cómo exporto mis datos?
-**R**: Usa la función de exportación a CSV en el menú Archivo.
+## Consideraciones Técnicas
 
-**P**: ¿Es compatible con otras bases de datos?
-**R**: Actualmente solo soporta SQLite, pero el diseño permite implementar otros motores de BD.
-##
-Made with ❤️ in 🇮🇨 by Samuel.
+### Manejo de Eventos
+- Implementación de listeners para actualización de datos
+- Sistema de eventos para sincronización entre vistas
+- Gestión de cambios en tiempo real
+
+### Gestión de Errores
+- Sistema de manejo de excepciones
+- Validación de entrada de datos
+- Mensajes de error informativos
+
+### Optimización
+- Carga bajo demanda de datos
+- Actualización selectiva de componentes
+- Gestión eficiente de recursos de memoria
