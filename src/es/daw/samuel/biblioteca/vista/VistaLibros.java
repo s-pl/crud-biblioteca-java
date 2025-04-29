@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.io.BufferedReader;
+import java.io.File;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class VistaLibros extends JPanel {
 
@@ -32,10 +34,10 @@ public class VistaLibros extends JPanel {
     private JTextField campoAnioPublicacion;
     private JComboBox<String> comboAutores;
     private JComboBox<String> comboCategorias;
-
+    
     private Map<String, Integer> mapaAutores;
     private Map<String, Integer> mapaCategorias;
-
+    
     public VistaLibros() {
         libroDAO = new LibroDAO();
         autorDAO = new AutorDAO();
@@ -73,16 +75,18 @@ public class VistaLibros extends JPanel {
                 mostrarLibroSeleccionado();
             }
         });
-
+       
         JScrollPane scrollPane = new JScrollPane(tablaLibros);
         panelTabla.add(scrollPane, BorderLayout.CENTER);
-
+        
+       
         JPanel panelFormulario = new JPanel(new BorderLayout());
         
 
         JPanel panelCampos = new JPanel(new GridLayout(5, 2, 10, 10));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        
+        
         panelCampos.add(new JLabel("ISBN:"));
         campoISBN = new JTextField();
         panelCampos.add(campoISBN);
@@ -102,7 +106,7 @@ public class VistaLibros extends JPanel {
         panelCampos.add(new JLabel("Categoría:"));
         comboCategorias = new JComboBox<>();
         panelCampos.add(comboCategorias);
-
+        
         panelFormulario.add(panelCampos, BorderLayout.CENTER);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -148,7 +152,7 @@ public class VistaLibros extends JPanel {
         ArrayList<Autor> autores = autorDAO.obtenerTodosLosAutores();
 
         for (Autor autor : autores) {
-            String item = autor.getNombre();
+            String item = autor.getId() + " - " + autor.getNombre();
             comboAutores.addItem(item);
             mapaAutores.put(item, autor.getId());
         }
@@ -162,7 +166,7 @@ public class VistaLibros extends JPanel {
         ArrayList<Categoria> categorias = categoriaDAO.obtenerTodasLasCategorias();
 
         for (Categoria categoria : categorias) {
-            String item = categoria.getNombre();
+            String item = categoria.getId() + " - " + categoria.getNombre();
             comboCategorias.addItem(item);
             mapaCategorias.put(item, categoria.getId());
         }
@@ -336,8 +340,24 @@ public class VistaLibros extends JPanel {
         cargarDatos();
     }
 
-    public void exportarACSV() {
-        String nombreArchivo = "libros.csv";
+   public void exportarACSV() {
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Guardar como");
+    
+    
+     FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV", "csv");
+    fileChooser.setFileFilter(filter);
+
+    int userSelection = fileChooser.showSaveDialog(null);
+
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        File archivoSeleccionado = fileChooser.getSelectedFile();
+
+        
+        String nombreArchivo = archivoSeleccionado.getAbsolutePath();
+        if (!nombreArchivo.toLowerCase().endsWith(".csv")) {
+            nombreArchivo += ".csv";
+        }
 
         try (FileWriter writer = new FileWriter(nombreArchivo)) {
 
@@ -345,29 +365,31 @@ public class VistaLibros extends JPanel {
 
             for (Libro libro : libroDAO.obtenerTodosLosLibros()) {
                 writer.append(libro.getIsbn())
-                        .append(",")
-                        .append(libro.getTitulo())
-                        .append(",")
-                        .append(String.valueOf(libro.getAnio_pub()))
-                        .append(",")
-                        .append(String.valueOf(libro.getAutor()))
-                        .append(",")
-                        .append(String.valueOf(libro.getCategoria()))
-                        .append("\n");
+                      .append(",")
+                      .append(libro.getTitulo())
+                      .append(",")
+                      .append(String.valueOf(libro.getAnio_pub()))
+                      .append(",")
+                      .append(String.valueOf(libro.getAutor()))
+                      .append(",")
+                      .append(String.valueOf(libro.getCategoria()))
+                      .append("\n");
             }
 
             JOptionPane.showMessageDialog(null,
-                    "Libros exportados correctamente a CSV: " + nombreArchivo,
-                    "Exportación exitosa",
-                    JOptionPane.INFORMATION_MESSAGE);
+                "Libros exportados correctamente a CSV: " + nombreArchivo,
+                "Exportación exitosa",
+                JOptionPane.INFORMATION_MESSAGE);
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
-                    "Error al exportar CSV: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                "Error al exportar CSV: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
+}
+
 
     private void elegirArchivo() {
         String archivo;

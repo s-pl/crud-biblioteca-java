@@ -21,7 +21,6 @@ public class BibliotecaApp extends JFrame {
         VistaCategorias vistaCategorias = new VistaCategorias();
         VistaConfig vistaConfig = new VistaConfig();
         
-        
         tabbedPane.addTab("Libros", vistaLibros);
         tabbedPane.addTab("Autores", vistaAutores);
         tabbedPane.addTab("Categorias", vistaCategorias);
@@ -48,5 +47,7 @@ public class BibliotecaApp extends JFrame {
              vistaCategorias.actualizarDatos();
             }
         });
+        
     }
+    
 }
