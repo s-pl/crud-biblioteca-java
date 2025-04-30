@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Samuel
+ * @author Samuel Ponce Luna
  */
 public class AutorDAO {
 

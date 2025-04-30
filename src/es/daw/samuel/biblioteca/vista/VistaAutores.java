@@ -6,7 +6,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
-
+/**
+ *
+ * @author Samuel Ponce Luna
+ */
 public class VistaAutores extends JPanel {
     
     private AutorDAO autorDAO;
@@ -77,6 +80,7 @@ public class VistaAutores extends JPanel {
         botonGuardar.addActionListener(e -> guardarAutor());
         
         JButton botonEliminar = new JButton("Eliminar");
+        
         botonEliminar.addActionListener(e -> eliminarAutor());
         
         panelBotones.add(botonNuevo);

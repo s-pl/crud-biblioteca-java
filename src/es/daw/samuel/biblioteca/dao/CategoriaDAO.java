@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author samue
+ * @author Samuel Ponce Luna
  */
 public class CategoriaDAO {
    private ConexionDB conexion;

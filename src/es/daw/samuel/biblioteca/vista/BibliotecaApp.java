@@ -2,7 +2,10 @@ package es.daw.samuel.biblioteca.vista;
 
 import javax.swing.*;
 import java.awt.*;
-
+/**
+ *
+ * @author Samuel Ponce Luna
+ */
 public class BibliotecaApp extends JFrame {
 
     private JTabbedPane tabbedPane;
@@ -12,7 +15,7 @@ public class BibliotecaApp extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
+     
         tabbedPane = new JTabbedPane();
 
         

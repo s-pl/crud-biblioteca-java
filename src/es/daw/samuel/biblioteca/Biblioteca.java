@@ -9,7 +9,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
- * @author samue
+ * @author Samuel Ponce Luna
  */
 public class Biblioteca {
 

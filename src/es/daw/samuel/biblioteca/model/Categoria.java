@@ -2,7 +2,10 @@ package es.daw.samuel.biblioteca.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
+/**
+ *
+ * @author Samuel Ponce Luna
+ */
 
 @Data
 @AllArgsConstructor

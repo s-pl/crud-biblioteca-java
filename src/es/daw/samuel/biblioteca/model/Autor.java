@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 /**
  *
- * @author samue
+ * @author Samuel Ponce Luna
  */
 
 @Data

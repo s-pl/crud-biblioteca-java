@@ -19,7 +19,10 @@ import java.util.Map;
 import java.io.BufferedReader;
 import java.io.File;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
+/**
+ *
+ * @author Samuel Ponce Luna
+ */
 public class VistaLibros extends JPanel {
 
     private LibroDAO libroDAO;
@@ -193,10 +196,10 @@ public class VistaLibros extends JPanel {
             String nombreAutor = nombresAutores.getOrDefault(libro.getAutor(), "Desconocido");
             String nombreCategoria = nombresCategorias.getOrDefault(libro.getCategoria(), "Desconocida");
 
-            Object[] fila = {
+            String[] fila = {
                 libro.getIsbn(),
                 libro.getTitulo(),
-                libro.getAnio_pub(),
+                Integer.toString(libro.getAnio_pub()),
                 nombreAutor,
                 nombreCategoria
             };
@@ -210,7 +213,7 @@ public class VistaLibros extends JPanel {
         if (fila != -1) {
             String isbn = (String) modeloLibros.getValueAt(fila, 0);
             String titulo = (String) modeloLibros.getValueAt(fila, 1);
-            int anio = (int) modeloLibros.getValueAt(fila, 2);
+            int anio = Integer.parseInt((String) modeloLibros.getValueAt(fila, 2));
             String autorNombre = (String) modeloLibros.getValueAt(fila, 3);
             String categoriaNombre = (String) modeloLibros.getValueAt(fila, 4);
 
@@ -483,10 +486,10 @@ public class VistaLibros extends JPanel {
                         for (Libro y : libroDAO.obtenerTodosLosLibros()) {
                             if (y.getAutor() == autorId) {
                                
-                                Object[] fila = {
+                                String[] fila = {
                                     y.getIsbn(),
                                     y.getTitulo(),
-                                    y.getAnio_pub(),
+                                    Integer.toString(y.getAnio_pub()),
                                     x.getNombre(),
                                     obtenerNombreCategoria(y.getCategoria()) 
                                 };
@@ -531,10 +534,10 @@ public class VistaLibros extends JPanel {
                         for (Libro y : libroDAO.obtenerTodosLosLibros()) {
                             if (y.getCategoria() == categoriaId) {
                                 
-                                Object[] fila = {
+                                String[] fila = {
                                     y.getIsbn(),
                                     y.getTitulo(),
-                                    y.getAnio_pub(),
+                                    Integer.toString(y.getAnio_pub()),
                                     obtenerNombreAutor(y.getAutor()), 
                                     x.getNombre() 
                                 };

@@ -4,7 +4,10 @@ import es.daw.samuel.biblioteca.config.ConexionDB;
 import es.daw.samuel.biblioteca.model.Libro;
 import java.sql.*;
 import java.util.ArrayList;
-
+/**
+ *
+ * @author Samuel Ponce Luna
+ */
 public class LibroDAO {
     private ConexionDB conexion;
 

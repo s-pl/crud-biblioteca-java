@@ -5,7 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+/**
+ *
+ * @author Samuel Ponce Luna
+ */
 public class VistaConfig extends JPanel {
 
     private JButton botonProbarConexion;
